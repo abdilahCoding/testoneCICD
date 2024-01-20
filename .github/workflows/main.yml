@@ -26,8 +26,8 @@ jobs:
       - name: Stop and remove old container (if exists)
         run: |
           if docker ps -a | grep -q testoneCICD-container; then
-            docker stop testoneCICD-container
-            docker rm testoneCICD-container
+            docker stop testoneCICD-container || true
+            docker rm testoneCICD-container || true
           fi
       - name: Run Docker container
         run: docker run -d -p 5000:5000 --name testoneCICD-container abdilah007/testcicd-app
