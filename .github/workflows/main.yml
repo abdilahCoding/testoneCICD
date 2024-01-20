@@ -10,20 +10,24 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Login to docker hub
+      - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
-      - name: Build docker image
+      - name: Build Docker image
         run: docker build -t abdilah007/testcicd-app .
-      - name: Publish image to docker hub
+      - name: Publish image to Docker Hub
         run: docker push abdilah007/testcicd-app:latest
-        
+
   deploy:
     needs: build
     runs-on: ubuntu-20.04
     steps:
-      - name: Pull image from docker hub
+      - name: Pull image from Docker Hub
         run: docker pull abdilah007/testcicd-app:latest
-      - name: Delete old container
-        run: docker rm -f testoneCICD-container
-      - name: Run docker container
+      - name: Stop and remove old container (if exists)
+        run: |
+          if docker ps -a | grep -q testoneCICD-container; then
+            docker stop testoneCICD-container
+            docker rm testoneCICD-container
+          fi
+      - name: Run Docker container
         run: docker run -d -p 5000:5000 --name testoneCICD-container abdilah007/testcicd-app
